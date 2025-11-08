@@ -13,12 +13,12 @@
         "testing",
         "modular-architecture"
     ],
-    "homepage": "https://github.com/skylence/laravel12-livewire4-filament4-claude-code",
+    "homepage": "https://github.com/skylence-be/laravel12-livewire4-filament4-claude-code",
     "license": "MIT",
     "authors": [
         {
             "name": "Skylence",
-            "email": "your-email@example.com"
+            "homepage": "https://github.com/skylence-be"
         }
     ],
     "require": {

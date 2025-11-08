@@ -15,11 +15,12 @@ Complete development toolkit for Laravel 12, Livewire 4, and Filament 4 with **3
 ## Quick Install
 
 ```bash
-# Clone or download to your Claude Code plugins directory
-git clone https://github.com/YOUR_USERNAME/skylence-claude-code-laravel-livewire4.git
+# Clone from GitHub
+git clone https://github.com/skylence-be/laravel12-livewire4-filament4-claude-code.git
 
-# Or install via Claude Code marketplace
-/plugin install skylence-laravel-livewire4-kit
+# Or install via Claude Code
+/plugin marketplace add skylence-be/laravel12-livewire4-filament4-claude-code
+/plugin install laravel12-livewire4-filament4-claude-code
 ```
 
 ## What's Inside
@@ -218,19 +219,28 @@ See `plugin.json` for complete feature configuration including:
 
 Contributions welcome! This is an open toolkit for the Laravel community.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
 ## License
 
 MIT License - See LICENSE file for details
 
 ## Author
 
-Skylence - [Your GitHub Profile]
+**Skylence** - [GitHub Profile](https://github.com/skylence-be)
 
 ## Support
 
-- GitHub Issues: Report bugs and request features
-- Documentation: See individual agent files in `.claude/agents/`
-- Examples: Check command files in `.claude/commands/`
+- **GitHub Issues**: [Report bugs and request features](https://github.com/skylence-be/laravel12-livewire4-filament4-claude-code/issues)
+- **Documentation**: See individual agent files in `.claude/agents/`
+- **Examples**: Check command files in `.claude/commands/`
+- **Star the repo**: Help others discover this toolkit!
 
 ---
 

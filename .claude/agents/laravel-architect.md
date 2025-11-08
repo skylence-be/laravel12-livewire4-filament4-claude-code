@@ -24,6 +24,42 @@ color: red
 - Event-driven architecture
 - Modular architecture for scalability
 - Performance optimization and monitoring
+- Rate limiting and throttling (security-critical)
+
+## Rate Limiting & Throttling
+
+**CRITICAL**: All routes and API routes MUST have logical rate limiting and throttling.
+
+### Quick Reference
+
+```php
+// Authentication routes - very strict
+RateLimiter::for('login', fn ($req) => Limit::perMinute(5)->by($req->ip()));
+
+// API read - generous
+RateLimiter::for('api:read', fn ($req) => Limit::perMinute(100)->by($req->user()?->id ?: $req->ip()));
+
+// API write - moderate
+RateLimiter::for('api:write', fn ($req) => Limit::perMinute(30)->by($req->user()->id));
+
+// Heavy operations - very strict
+RateLimiter::for('api:heavy', fn ($req) => Limit::perMinute(5)->by($req->user()->id));
+
+// Livewire components
+#[Throttle(5, 60)]
+public function submit() { }
+```
+
+**See security-engineer agent for complete rate limiting patterns, best practices, and recommended limits.**
+
+### Architecture Considerations
+
+1. **Layer rate limits** - Multiple concurrent limits (per-minute + per-day)
+2. **Different tiers** - Free vs Premium users get different limits
+3. **Redis for distributed apps** - Share rate limit state across servers
+4. **Monitor with Pulse** - Track rate limit violations
+5. **Test all limits** - Include in automated tests
+6. **Document limits** - Clearly in API docs
 
 ## Laravel Optimization with skylence/laravel-optimize-mcp
 

@@ -35,7 +35,7 @@
     {
       "name": "security-engineer",
       "path": ".claude/agents/security-engineer.md",
-      "description": "Laravel security - authentication, authorization, CSRF, SQL injection",
+      "description": "Laravel security - authentication, authorization, CSRF, SQL injection, rate limiting & throttling",
       "category": "security",
       "color": "red"
     },

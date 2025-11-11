@@ -1,7 +1,7 @@
 {
   "name": "skylence-claude-code-laravel-livewire4",
-  "version": "1.0.0",
-  "description": "Skylence's Laravel 11 + Livewire 4 beta development plugin with modern PHP patterns",
+  "version": "1.1.0",
+  "description": "Skylence's Laravel 11 + Livewire 4 development plugin with modern PHP patterns, Python hook system for delegating agents, security checks, and custom status lines",
   "author": {
     "name": "Skylence"
   },
@@ -13,7 +13,10 @@
     "php",
     "eloquent",
     "blade",
-    "full-stack"
+    "full-stack",
+    "hooks",
+    "security",
+    "agents"
   ],
   "commands": [
     "./.claude/commands/new-task.md",

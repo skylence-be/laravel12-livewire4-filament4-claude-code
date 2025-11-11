@@ -14,3 +14,8 @@ Thumbs.db
 
 # Force include .claude directory (overriding global gitignore)
 !.claude/
+
+# Claude Code local settings and logs
+.claude/settings.local.json
+.claude/data/
+logs/

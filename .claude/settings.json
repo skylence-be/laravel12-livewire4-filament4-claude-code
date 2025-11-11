@@ -1,12 +1,100 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:code.claude.com)",
+      "WebSearch",
+      "Bash(uv:*)",
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "Bash(grep:*)",
+      "Bash(npm:*)",
+      "Bash(ls:*)",
+      "Bash(cp:*)",
+      "Bash(cat:*)",
+      "Bash(xcopy:*)",
+      "Bash(chmod:*)",
+      "Bash(touch:*)",
+      "Bash(dir:*)",
+      "Bash(for:*)",
+      "Bash(done)",
+      "Write",
+      "Edit"
+    ],
+    "deny": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "uv run .claude/status_lines/status_line.py",
+    "padding": 0
+  },
   "hooks": {
-    "session_start": {
-      "command": "php .claude/hooks/session_start.php",
-      "enabled": true
-    },
-    "pre_tool_use": {
-      "command": "node .claude/hooks/pre_tool_use.js",
-      "enabled": true
-    }
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/pre_tool_use.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/stop.py --chat"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/subagent_stop.py --notify"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/user_prompt_submit.py --log-only --store-last-prompt --name-agent"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/pre_compact.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/session_start.py"
+          }
+        ]
+      }
+    ]
   }
 }

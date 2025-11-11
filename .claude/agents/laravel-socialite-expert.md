@@ -43,25 +43,7 @@ color: yellow
 - **Stateless Authentication**: Support for API/stateless flows
 
 ### Basic Flow
-```php
-// Redirect to provider
-Route::get('/auth/{provider}', function ($provider) {
-    return Socialite::driver($provider)->redirect();
-});
-
-// Handle callback
-Route::get('/auth/{provider}/callback', function ($provider) {
-    $user = Socialite::driver($provider)->user();
-
-    // $user->token
-    // $user->refreshToken
-    // $user->expiresIn
-    // $user->getId()
-    // $user->getName()
-    // $user->getEmail()
-    // $user->getAvatar()
-});
-```
+Redirect users to provider for authentication, then handle callback to retrieve user data and tokens.
 
 ## Integration with Livewire 4
 - **Login Components**: Build Livewire components for social login buttons
@@ -72,20 +54,7 @@ Route::get('/auth/{provider}/callback', function ($provider) {
 - **Profile Sync**: Real-time profile updates from social providers
 
 ### Livewire Example
-```php
-class SocialLogin extends Component
-{
-    public function redirectToProvider($provider)
-    {
-        return redirect()->route('oauth.redirect', $provider);
-    }
-
-    public function render()
-    {
-        return view('livewire.social-login');
-    }
-}
-```
+Create Livewire components for social login buttons with redirect methods.
 
 ## User Account Management
 - **Find or Create**: Find existing user or create new from OAuth data
@@ -96,20 +65,7 @@ class SocialLogin extends Component
 - **Multi-Provider Support**: Allow users to link multiple providers
 
 ### Database Schema
-```php
-Schema::create('oauth_providers', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->string('provider'); // github, google, etc.
-    $table->string('provider_id');
-    $table->string('access_token')->nullable();
-    $table->string('refresh_token')->nullable();
-    $table->timestamp('expires_at')->nullable();
-    $table->timestamps();
-
-    $table->unique(['provider', 'provider_id']);
-});
-```
+Create oauth_providers table to store user OAuth connections, tokens, and provider information.
 
 ## Advanced Features
 - **Scopes**: Request additional permissions from providers
@@ -120,12 +76,7 @@ Schema::create('oauth_providers', function (Blueprint $table) {
 - **Provider-Specific Data**: Access provider-specific user fields
 
 ### Scopes and Parameters
-```php
-return Socialite::driver('github')
-    ->scopes(['read:user', 'public_repo'])
-    ->with(['allow_signup' => 'false'])
-    ->redirect();
-```
+Request additional permissions and pass parameters to OAuth providers using scopes() and with() methods.
 
 ## Security Best Practices
 - **State Parameter**: Verify OAuth state to prevent CSRF
@@ -155,33 +106,7 @@ return Socialite::driver('github')
 - Browser test complete OAuth flow
 
 ### Testing Examples
-```php
-test('user can login with github', function () {
-    $abstractUser = Mockery::mock('Laravel\Socialite\Two\User');
-    $abstractUser->shouldReceive('getId')
-        ->andReturn('12345')
-        ->shouldReceive('getEmail')
-        ->andReturn('test@example.com')
-        ->shouldReceive('getName')
-        ->andReturn('Test User')
-        ->shouldReceive('getAvatar')
-        ->andReturn('https://example.com/avatar.jpg');
-
-    Socialite::shouldReceive('driver->user')
-        ->andReturn($abstractUser);
-
-    $response = $this->get('/auth/github/callback');
-
-    expect(User::where('email', 'test@example.com')->exists())->toBeTrue();
-});
-
-test('existing user can link github account', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
-
-    // Mock and test linking flow
-});
-```
+Mock Socialite provider responses and test OAuth authentication flows with Pest.
 
 ## Integration with Laravel/Fortify
 - Combine traditional auth with social login

@@ -32,23 +32,7 @@ color: red
 
 ### Quick Reference
 
-```php
-// Authentication routes - very strict
-RateLimiter::for('login', fn ($req) => Limit::perMinute(5)->by($req->ip()));
-
-// API read - generous
-RateLimiter::for('api:read', fn ($req) => Limit::perMinute(100)->by($req->user()?->id ?: $req->ip()));
-
-// API write - moderate
-RateLimiter::for('api:write', fn ($req) => Limit::perMinute(30)->by($req->user()->id));
-
-// Heavy operations - very strict
-RateLimiter::for('api:heavy', fn ($req) => Limit::perMinute(5)->by($req->user()->id));
-
-// Livewire components
-#[Throttle(5, 60)]
-public function submit() { }
-```
+Apply rate limiting with appropriate limits: authentication (5/min), API read (100/min), API write (30/min), heavy operations (5/min), and Livewire components using #[Throttle] attribute.
 
 **See security-engineer agent for complete rate limiting patterns, best practices, and recommended limits.**
 
@@ -77,26 +61,12 @@ The MCP tools will analyze:
 - Performance bottlenecks
 
 ### Database Monitoring
-Set up automatic database size monitoring with growth tracking and alerts:
-```bash
-php artisan optimize-mcp:monitor-database  # Run monitoring
-php artisan optimize-mcp:database-size      # Check current size
-```
+Set up automatic database size monitoring with growth tracking and alerts using artisan commands.
 
-Configure in `.env`:
-```env
-OPTIMIZE_MCP_DB_MONITORING=true
-OPTIMIZE_MCP_DB_NOTIFICATION_EMAILS=dev@example.com
-OPTIMIZE_MCP_DB_WARNING_THRESHOLD=80
-OPTIMIZE_MCP_DB_CRITICAL_THRESHOLD=90
-```
+Configure monitoring settings in .env with notification emails and threshold levels.
 
 ### Remote Server Analysis
-For staging/production optimization:
-```env
-OPTIMIZE_MCP_AUTH_ENABLED=true
-OPTIMIZE_MCP_API_TOKEN=your-secure-token
-```
+For staging/production optimization, enable HTTP auth and configure secure API token in .env.
 
 Then ask: "Connect to my production server at https://myapp.com and analyze configuration"
 
@@ -121,53 +91,10 @@ Then ask: "Connect to my production server at https://myapp.com and analyze conf
 - **Namespace isolation**: Avoid naming conflicts
 
 ### Module Structure
-```
-Modules/
-├── Blog/
-│   ├── Config/
-│   ├── Console/
-│   ├── Database/
-│   │   ├── Migrations/
-│   │   ├── Seeders/
-│   │   └── Factories/
-│   ├── Entities/ (Models)
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   ├── Middleware/
-│   │   └── Requests/
-│   ├── Providers/
-│   ├── Resources/
-│   │   ├── assets/
-│   │   ├── lang/
-│   │   └── views/
-│   ├── Routes/
-│   │   ├── web.php
-│   │   └── api.php
-│   ├── Tests/
-│   ├── Livewire/ (Livewire components)
-│   ├── Filament/ (Filament resources)
-│   └── module.json
-```
+Standard module structure includes Config, Console, Database, Entities (Models), Http, Providers, Resources, Routes, Tests, Livewire, Filament, and module.json.
 
 ### Module Commands
-```bash
-# Create new module
-php artisan module:make Blog
-
-# Create module components
-php artisan module:make-model Post Blog
-php artisan module:make-controller PostController Blog
-php artisan module:make-migration create_posts_table Blog
-php artisan module:make-seeder PostsTableSeeder Blog
-php artisan module:make-request StorePostRequest Blog
-
-# Module management
-php artisan module:enable Blog
-php artisan module:disable Blog
-php artisan module:list
-php artisan module:migrate Blog
-php artisan module:seed Blog
-```
+Use artisan commands to create and manage modules: module:make, module:make-model, module:make-controller, module:enable, module:disable, module:migrate, and module:seed.
 
 ### Integration with Livewire & Filament
 - **Livewire components**: `Modules/Blog/Livewire/PostList.php`
@@ -207,67 +134,11 @@ php artisan module:seed Blog
 
 ### Testing Configuration for Modules
 
-**IMPORTANT**: Configure `phpunit.xml` to detect Pest/PHPUnit tests in modules.
+**IMPORTANT**: Configure `phpunit.xml` to detect Pest/PHPUnit tests in modules by adding module test directories to testsuites and including Modules directory in source for coverage.
 
-Update your `phpunit.xml`:
+**For Pest Configuration**: Update tests/Pest.php to include module test directories using wildcard patterns.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         colors="true">
-    <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-            <!-- Add module unit tests -->
-            <directory>Modules/*/Tests/Unit</directory>
-        </testsuite>
-
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
-            <!-- Add module feature tests -->
-            <directory>Modules/*/Tests/Feature</directory>
-        </testsuite>
-    </testsuites>
-
-    <source>
-        <include>
-            <directory>app</directory>
-            <!-- Include module source for coverage -->
-            <directory>Modules</directory>
-        </include>
-    </source>
-</phpunit>
-```
-
-**For Pest Configuration** (`tests/Pest.php`):
-
-```php
-<?php
-
-uses(Tests\TestCase::class)->in('Feature');
-uses(Tests\TestCase::class)->in('../Modules/*/Tests/Feature');
-
-uses(Tests\TestCase::class)->in('Unit');
-uses(Tests\TestCase::class)->in('../Modules/*/Tests/Unit');
-```
-
-**Running Module Tests**:
-
-```bash
-# Run all tests (app + modules)
-php artisan test
-
-# Run specific module tests
-php artisan test --testsuite=Feature --filter=Blog
-
-# Run tests for specific module
-vendor/bin/pest Modules/Blog/Tests
-
-# With coverage for modules
-php artisan test --coverage --min=80
-```
+**Running Module Tests**: Use php artisan test with --testsuite, --filter flags, or vendor/bin/pest for specific modules. Include --coverage flag for coverage reports.
 
 ## Available Slash Commands
 When creating Laravel components, recommend using these slash commands:

@@ -30,170 +30,39 @@ color: red
 
 ### Default Laravel Rate Limiting
 
-**Web Routes** (routes/web.php):
-```php
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Cache\RateLimiting\Limit;
+**Web Routes**: Configure rate limiter for web routes with perMinute limits by user ID or IP address.
 
-// In RouteServiceProvider or bootstrap/app.php
-RateLimiter::for('web', function (Request $request) {
-    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-});
-
-// Apply to routes
-Route::middleware(['throttle:web'])->group(function () {
-    // Your web routes
-});
-```
-
-**API Routes** (routes/api.php):
-```php
-RateLimiter::for('api', function (Request $request) {
-    return Limit::perMinute(60)
-        ->by($request->user()?->id ?: $request->ip())
-        ->response(function (Request $request, array $headers) {
-            return response()->json([
-                'message' => 'Too many requests. Please slow down.',
-            ], 429, $headers);
-        });
-});
-
-// Apply to API routes
-Route::middleware(['throttle:api'])->group(function () {
-    // Your API routes
-});
-```
+**API Routes**: Configure API rate limiter with custom 429 response messages for better user experience.
 
 ### Granular Rate Limiting by Action
 
-**Authentication Routes** (strict limits):
-```php
-RateLimiter::for('login', function (Request $request) {
-    return Limit::perMinute(5)->by($request->ip());
-});
-
-RateLimiter::for('register', function (Request $request) {
-    return Limit::perHour(10)->by($request->ip());
-});
-
-RateLimiter::for('password-reset', function (Request $request) {
-    return Limit::perHour(5)->by($request->email);
-});
-
-// Apply to specific routes
-Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('throttle:login');
-
-Route::post('/register', [AuthController::class, 'register'])
-    ->middleware('throttle:register');
-
-Route::post('/forgot-password', [PasswordController::class, 'forgot'])
-    ->middleware('throttle:password-reset');
-```
+**Authentication Routes**: Apply strict limits (5/min for login, 10/hour for register) by IP address to prevent brute force and spam.
 
 ### API Endpoint Rate Limiting
 
-**Read Operations** (generous limits):
-```php
-RateLimiter::for('api:read', function (Request $request) {
-    return Limit::perMinute(100)->by($request->user()?->id ?: $request->ip());
-});
-
-Route::get('/posts', [PostController::class, 'index'])
-    ->middleware('throttle:api:read');
-```
-
-**Write Operations** (stricter limits):
-```php
-RateLimiter::for('api:write', function (Request $request) {
-    return Limit::perMinute(30)->by($request->user()->id);
-});
-
-Route::post('/posts', [PostController::class, 'store'])
-    ->middleware('throttle:api:write');
-```
-
-**Heavy Operations** (very strict):
-```php
-RateLimiter::for('api:heavy', function (Request $request) {
-    return Limit::perMinute(5)->by($request->user()->id);
-});
-
-Route::post('/reports/generate', [ReportController::class, 'generate'])
-    ->middleware('throttle:api:heavy');
-```
+**Read Operations**: Apply generous limits (100/min) for read endpoints.
+**Write Operations**: Apply stricter limits (30/min) for write endpoints by user ID.
+**Heavy Operations**: Apply very strict limits (5/min) for resource-intensive operations.
 
 ### Tiered Rate Limiting (Premium Users)
 
-```php
-RateLimiter::for('api:tiered', function (Request $request) {
-    return $request->user()?->isPremium()
-        ? Limit::perMinute(1000)->by($request->user()->id)
-        : Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-});
-```
+Implement different rate limits based on user subscription level (premium vs free).
 
 ### Rate Limiting with Multiple Limits
 
-```php
-RateLimiter::for('api:multi', function (Request $request) {
-    return [
-        Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()),
-        Limit::perDay(1000)->by($request->user()?->id ?: $request->ip()),
-    ];
-});
-```
+Apply multiple concurrent limits (per-minute and per-day) to the same endpoint.
 
 ### Livewire Component Throttling
 
-```php
-use Livewire\Attributes\Throttle;
-
-class ContactForm extends Component
-{
-    #[Throttle(5, 60)] // 5 requests per 60 seconds
-    public function submit()
-    {
-        // Process form
-    }
-}
-```
+Use #[Throttle] attribute on Livewire component methods to limit action frequency.
 
 ### Named Route Groups
 
-```php
-// routes/api.php
-Route::prefix('v1')->group(function () {
-    Route::middleware('throttle:api:read')->group(function () {
-        Route::get('/posts', [PostController::class, 'index']);
-        Route::get('/posts/{post}', [PostController::class, 'show']);
-        Route::get('/users', [UserController::class, 'index']);
-    });
-
-    Route::middleware('throttle:api:write')->group(function () {
-        Route::post('/posts', [PostController::class, 'store']);
-        Route::put('/posts/{post}', [PostController::class, 'update']);
-        Route::delete('/posts/{post}', [PostController::class, 'destroy']);
-    });
-
-    Route::middleware('throttle:api:heavy')->group(function () {
-        Route::post('/exports', [ExportController::class, 'create']);
-        Route::post('/imports', [ImportController::class, 'process']);
-    });
-});
-```
+Group routes by operation type (read/write/heavy) and apply appropriate rate limiters.
 
 ### Bypass Rate Limiting (Admin/Testing)
 
-```php
-RateLimiter::for('api', function (Request $request) {
-    if ($request->user()?->isAdmin()) {
-        return Limit::none(); // No rate limit for admins
-    }
-
-    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-});
-```
+Allow admins to bypass rate limits using Limit::none() for testing and administrative tasks.
 
 ### Rate Limiting Best Practices
 
@@ -219,18 +88,7 @@ RateLimiter::for('api', function (Request $request) {
 
 ### Testing Rate Limits
 
-```php
-// tests/Feature/RateLimitTest.php
-test('login endpoint is rate limited', function () {
-    for ($i = 0; $i < 5; $i++) {
-        $this->post('/login', ['email' => 'test@test.com', 'password' => 'wrong']);
-    }
-
-    $response = $this->post('/login', ['email' => 'test@test.com', 'password' => 'wrong']);
-
-    $response->assertStatus(429);
-});
-```
+Test rate limit enforcement with Pest by making multiple requests and asserting 429 status code.
 
 ### Recommended Rate Limits
 

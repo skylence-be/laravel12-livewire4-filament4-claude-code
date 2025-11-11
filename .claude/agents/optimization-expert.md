@@ -30,11 +30,7 @@ color: green
 **IMPORTANT**: This project uses `skylence/laravel-optimize-mcp` for AI-assisted optimization.
 
 ### Installation Check
-If not already installed:
-```bash
-composer require skylence/laravel-optimize-mcp
-php artisan optimize-mcp:install
-```
+Install the package with composer and run the setup artisan command if not already installed.
 
 ### Available MCP Tools
 
@@ -56,36 +52,11 @@ Track database size, growth trends, and disk usage:
 - Automatic alerts at 80% (warning) and 90% (critical)
 - Historical tracking for capacity planning
 
-**Commands**:
-```bash
-# Check current database size
-php artisan optimize-mcp:database-size
+**Commands**: Use artisan commands to check database size, run monitoring with alerts, and clean old logs.
 
-# Run monitoring (logs + alerts)
-php artisan optimize-mcp:monitor-database
+**Scheduled Monitoring Setup**: Configure scheduler to run database monitoring daily with optional conditions.
 
-# Clean old logs
-php artisan optimize-mcp:prune-database-logs
-```
-
-**Scheduled Monitoring Setup** (Laravel 11+):
-```php
-// bootstrap/app.php
-->withSchedule(function (Schedule $schedule): void {
-    $schedule->command('optimize-mcp:monitor-database')
-        ->daily()
-        ->onOneServer()
-        ->when(fn () => config('app.schedule_enabled', true));
-})
-```
-
-**Environment Configuration**:
-```env
-OPTIMIZE_MCP_DB_MONITORING=true
-OPTIMIZE_MCP_DB_NOTIFICATION_EMAILS=dev@example.com,ops@example.com
-OPTIMIZE_MCP_DB_WARNING_THRESHOLD=80
-OPTIMIZE_MCP_DB_CRITICAL_THRESHOLD=90
-```
+**Environment Configuration**: Enable monitoring and configure notification emails and threshold levels in .env file.
 
 #### Project Structure Analysis
 Review project setup and development workflow:
@@ -128,26 +99,14 @@ Analyze and generate nginx configs:
 
 ### Remote Server Access
 
-For staging/production analysis, enable HTTP access:
-
-```env
-OPTIMIZE_MCP_AUTH_ENABLED=true
-OPTIMIZE_MCP_API_TOKEN=your-secure-token
-```
-
-Generate secure token:
-```bash
-php artisan tinker --execute="echo bin2hex(random_bytes(32))"
-```
+For staging/production analysis, enable HTTP access with auth enabled and secure API token in .env. Generate secure tokens using artisan tinker.
 
 **Usage**: Ask "Connect to my production server at https://myapp.com and analyze configuration"
 
 ## Optimization Workflow
 
 ### 1. Initial Analysis
-```
-"Analyze my Laravel project and help me optimize it"
-```
+Ask for comprehensive Laravel project analysis and optimization recommendations.
 
 ### 2. Configuration Optimization
 - Review cache drivers (Redis recommended for production)
@@ -202,13 +161,7 @@ php artisan tinker --execute="echo bin2hex(random_bytes(32))"
 - Run performance benchmarks
 
 ### Production
-- Enable all Laravel optimizations:
-  ```bash
-  php artisan config:cache
-  php artisan route:cache
-  php artisan view:cache
-  php artisan event:cache
-  ```
+- Enable all Laravel optimizations with artisan cache commands
 - Use queue workers with Supervisor
 - Enable OPcache with recommended settings
 - Configure proper logging and rotation
@@ -226,41 +179,13 @@ php artisan tinker --execute="echo bin2hex(random_bytes(32))"
 ## Common Optimization Patterns
 
 ### Cache Everything
-```php
-// Configuration
-'cache' => [
-    'default' => env('CACHE_DRIVER', 'redis'),
-],
-
-// Session
-'session' => [
-    'driver' => env('SESSION_DRIVER', 'redis'),
-],
-
-// Queue
-'queue' => [
-    'default' => env('QUEUE_CONNECTION', 'redis'),
-],
-```
+Configure cache, session, and queue drivers to use Redis for optimal performance.
 
 ### Database Connection Pooling
-```env
-DB_CONNECTION=mysql
-DB_POOL_MIN=2
-DB_POOL_MAX=10
-```
+Set minimum and maximum database connection pool sizes in environment configuration.
 
 ### Scheduled Monitoring
-```php
-// Daily database monitoring
-$schedule->command('optimize-mcp:monitor-database')->daily();
-
-// Weekly log cleanup
-$schedule->command('optimize-mcp:prune-database-logs')->weekly();
-
-// Optimize Laravel every hour
-$schedule->command('optimize')->hourly();
-```
+Schedule daily database monitoring, weekly log cleanup, and hourly Laravel optimization commands.
 
 ### Progressive Optimization
 1. Analyze current state with MCP tools

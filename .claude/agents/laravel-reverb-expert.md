@@ -46,23 +46,7 @@ color: cyan
 - **Component Synchronization**: Sync component state across users/tabs
 
 ### Example Livewire Integration
-```php
-// Broadcasting event
-class OrderShipped implements ShouldBroadcast
-{
-    public function broadcastOn()
-    {
-        return new Channel('orders');
-    }
-}
-
-// Livewire component listening
-#[On('echo:orders,OrderShipped')]
-public function notifyOrderShipped($event)
-{
-    $this->loadOrders();
-}
-```
+Broadcasting events and listening in Livewire components enables real-time updates.
 
 ## Integration with Laravel/Octane
 - Run Reverb alongside Octane for maximum performance
@@ -97,19 +81,7 @@ public function notifyOrderShipped($event)
 - **Whisper Events**: Client-to-client events without server processing
 
 ### Echo Setup
-```javascript
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT,
-    forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
-});
-```
+Configure Laravel Echo to connect to Reverb WebSocket server using environment variables.
 
 ## Presence Channels
 - Track online users in real-time
@@ -155,26 +127,7 @@ window.Echo = new Echo({
 - Use `Event::fake()` and `Event::assertDispatched()`
 
 ### Testing Examples
-```php
-test('order shipped event is broadcast', function () {
-    Event::fake([OrderShipped::class]);
-
-    $order = Order::factory()->create();
-    $order->ship();
-
-    Event::assertDispatched(OrderShipped::class, function ($event) use ($order) {
-        return $event->order->id === $order->id;
-    });
-});
-
-test('private channel requires authentication', function () {
-    $response = $this->postJson('/broadcasting/auth', [
-        'channel_name' => 'private-orders.1',
-    ]);
-
-    $response->assertUnauthorized();
-});
-```
+Test event broadcasting, channel authorization, and real-time functionality with Pest.
 
 ## Security Best Practices
 - Always authenticate private channel access

@@ -42,114 +42,23 @@ When using **nwidart/laravel-modules**, configure tests to detect module test fi
 
 ### phpunit.xml Configuration
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         colors="true">
-    <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-            <!-- Add module unit tests -->
-            <directory>Modules/*/Tests/Unit</directory>
-        </testsuite>
-
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
-            <!-- Add module feature tests -->
-            <directory>Modules/*/Tests/Feature</directory>
-        </testsuite>
-    </testsuites>
-
-    <source>
-        <include>
-            <directory>app</directory>
-            <!-- Include modules for code coverage -->
-            <directory>Modules</directory>
-        </include>
-    </source>
-
-    <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-    </php>
-</phpunit>
-```
+Configure phpunit.xml to include module test directories in both Unit and Feature test suites, and add Modules directory to source for code coverage tracking.
 
 ### Pest Configuration
 
-Update `tests/Pest.php` to include module tests:
-
-```php
-<?php
-
-use Tests\TestCase;
-
-// App tests
-uses(TestCase::class)->in('Feature');
-uses(TestCase::class)->in('Unit');
-
-// Module tests
-uses(TestCase::class)->in('../Modules/*/Tests/Feature');
-uses(TestCase::class)->in('../Modules/*/Tests/Unit');
-```
+Update tests/Pest.php to include module test directories using wildcard patterns.
 
 ### Running Tests
 
-```bash
-# Run all tests (app + all modules)
-php artisan test
-
-# Run with coverage
-php artisan test --coverage --min=90
-
-# Run specific module tests
-vendor/bin/pest Modules/Blog/Tests
-
-# Run module feature tests only
-php artisan test --testsuite=Feature --filter=Blog
-
-# Run parallel tests
-php artisan test --parallel
-```
+Run all tests with php artisan test, use --coverage flag for coverage reports, filter specific modules, and use --parallel for faster execution.
 
 ### Module Test Structure
 
-```
-Modules/Blog/Tests/
-├── Feature/
-│   ├── PostControllerTest.php
-│   ├── PostCreationTest.php
-│   └── Livewire/
-│       └── PostListTest.php
-├── Unit/
-│   ├── PostModelTest.php
-│   └── PostServiceTest.php
-└── Pest.php (module-specific configuration)
-```
+Organize module tests into Feature and Unit directories, with Livewire tests in subdirectories.
 
 ### Module-Specific Pest Config
 
-`Modules/Blog/Tests/Pest.php`:
-
-```php
-<?php
-
-uses(Tests\TestCase::class)->in(__DIR__);
-
-// Module-specific setup
-beforeEach(function () {
-    // Seed module-specific data
-    $this->artisan('module:seed', ['module' => 'Blog']);
-});
-```
+Create module-specific Pest.php files with beforeEach hooks for module data seeding.
 
 ### Testing Best Practices for Modules
 

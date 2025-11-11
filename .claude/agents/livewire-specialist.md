@@ -30,58 +30,15 @@ color: purple
 
 ### Throttle Attribute
 
-```php
-use Livewire\Attributes\Throttle;
-
-class ContactForm extends Component
-{
-    #[Throttle(5, 60)] // 5 requests per 60 seconds
-    public function submit()
-    {
-        // Process form submission
-    }
-
-    #[Throttle(10)] // 10 requests per minute (default window)
-    public function search($query)
-    {
-        // Search functionality
-    }
-
-    #[Throttle(1, 3)] // 1 request per 3 seconds (very strict)
-    public function generateReport()
-    {
-        // Heavy operation
-    }
-}
-```
+Use #[Throttle] attribute on Livewire component methods to limit request frequency.
 
 ### Per-User Throttling
 
-```php
-#[Throttle(5, method: 'throttleKey')]
-public function sendMessage()
-{
-    // Send message
-}
-
-public function throttleKey()
-{
-    return 'send-message-' . auth()->id();
-}
-```
+Implement per-user throttling with custom throttle keys using the throttleKey method.
 
 ### Conditional Throttling
 
-```php
-public function save()
-{
-    // Premium users get higher limits
-    $limit = auth()->user()->isPremium() ? 100 : 10;
-    $this->rateLimit($limit, 60, 'save-' . auth()->id());
-
-    // Save logic
-}
-```
+Apply different rate limits based on user subscription level or role using rateLimit() method.
 
 ### Recommended Throttle Limits
 

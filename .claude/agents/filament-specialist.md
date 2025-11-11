@@ -120,26 +120,7 @@ When creating Filament components, recommend using these slash commands:
 - Browser test with Dusk for full workflows
 
 ### Testing Examples
-```php
-test('can render post resource list', function () {
-    $this->get(PostResource::getUrl('index'))
-        ->assertSuccessful();
-});
-
-test('can create post', function () {
-    $newPost = Post::factory()->make();
-
-    livewire(PostResource\Pages\CreatePost::class)
-        ->fillForm([
-            'title' => $newPost->title,
-            'content' => $newPost->content,
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
-
-    expect(Post::where('title', $newPost->title)->exists())->toBeTrue();
-});
-```
+Test Filament resources, forms, tables, and actions with Pest and Livewire testing helpers.
 
 ## Security Best Practices
 - Use policies for resource authorization
